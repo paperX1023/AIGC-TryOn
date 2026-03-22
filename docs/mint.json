@@ -1,0 +1,50 @@
+{
+  "name": "AIGC-TryOn",
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0D9488",
+    "light": "#5EEAD4",
+    "dark": "#115E59"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/paperX1023/AIGC-TryOn"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "项目概览",
+      "pages": [
+        "introduction"
+      ]
+    },
+    {
+      "group": "快速开始",
+      "pages": [
+        "quickstart"
+      ]
+    },
+    {
+      "group": "核心架构",
+      "pages": [
+        "architecture/frontend",
+        "architecture/backend",
+        "architecture/inference"
+      ]
+    },
+    {
+      "group": "API 文档",
+      "pages": [
+        "api-reference/vton-endpoint"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/paperX1023/AIGC-TryOn"
+  }
+}
