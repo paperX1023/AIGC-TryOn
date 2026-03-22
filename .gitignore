@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+
+# 彻底忽略所有权重和大型二进制文件
+ckpt/
+*.pth
+*.onnx
+*.safetensors
+*.pkl
+*.bin
+
+# 忽略结果和日志
+results/
+output/
+*.log

@@ -42,7 +42,7 @@ def pil_to_binary_mask(pil_image, threshold=0):
     return output_mask
 
 
-base_path = 'yisol/IDM-VTON'
+base_path = '/root/IDM-VTON/ckpt'
 example_path = os.path.join(os.path.dirname(__file__), 'example')
 
 unet = UNet2DConditionModel.from_pretrained(
@@ -261,7 +261,7 @@ for ex_human in human_list_path:
 image_blocks = gr.Blocks().queue()
 with image_blocks as demo:
     gr.Markdown("## IDM-VTON 👕👔👚")
-    gr.Markdown("Virtual Try-on with your image and garment image. Check out the [source codes](https://github.com/yisol/IDM-VTON) and the [model](https://huggingface.co/yisol/IDM-VTON)")
+    gr.Markdown("Virtual Try-on with your image and garment image. Check out the [source codes](https://github.com//root/IDM-VTON/ckpt) and the [model](https://huggingface.co//root/IDM-VTON/ckpt)")
     with gr.Row():
         with gr.Column():
             imgs = gr.ImageEditor(sources='upload', type="pil", label='Human. Mask with pen or use auto-masking', interactive=True)
