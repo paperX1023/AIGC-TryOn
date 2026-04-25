@@ -1,4 +1,5 @@
 export interface BodyAnalysisResult {
+    record_id?: number | null
     gender: string
     body_shape: string
     shoulder_type: string

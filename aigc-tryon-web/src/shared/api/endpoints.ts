@@ -1,5 +1,15 @@
 export const API_ENDPOINTS = {
     ANALYZE_BODY: '/api/v1/body/analyze',
     CHAT_RECOMMEND: '/api/v1/chat/recommend',
+    CHAT_RECOMMEND_STREAM: '/api/v1/chat/recommend/stream',
     TRY_ON: '/api/v1/tryon',
+    WARDROBE: '/api/v1/wardrobe',
+    WARDROBE_UPLOAD: '/api/v1/wardrobe/upload',
+    AUTH_REGISTER: '/api/v1/auth/register',
+    AUTH_LOGIN: '/api/v1/auth/login',
+    AUTH_ME: '/api/v1/auth/me',
+    USERS: '/api/v1/users',
+    USER_ME_DASHBOARD: '/api/v1/users/me/dashboard',
+    USER_DETAIL: (userId: number) => `/api/v1/users/${userId}`,
+    USER_DASHBOARD: (userId: number) => `/api/v1/users/${userId}/dashboard`,
 }

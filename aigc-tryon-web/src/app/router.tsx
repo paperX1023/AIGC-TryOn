@@ -5,6 +5,8 @@ import AnalyzePage from '../pages/Analyze'
 import ChatPage from '../pages/Chat'
 import TryOnPage from '../pages/TryOn'
 import HistoryPage from '../pages/History'
+import ProfilePage from '../pages/Profile'
+import RequireUser from './RequireUser'
 
 const router = createBrowserRouter([
     {
@@ -12,10 +14,11 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
             { index: true, element: <HomePage /> },
-            { path: 'analyze', element: <AnalyzePage /> },
-            { path: 'chat', element: <ChatPage /> },
-            { path: 'tryon', element: <TryOnPage /> },
-            { path: 'history', element: <HistoryPage /> },
+            { path: 'analyze', element: <RequireUser><AnalyzePage /></RequireUser> },
+            { path: 'chat', element: <RequireUser><ChatPage /></RequireUser> },
+            { path: 'tryon', element: <RequireUser><TryOnPage /></RequireUser> },
+            { path: 'history', element: <RequireUser><HistoryPage /></RequireUser> },
+            { path: 'profile', element: <RequireUser><ProfilePage /></RequireUser> },
         ],
     },
 ])

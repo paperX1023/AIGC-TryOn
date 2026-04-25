@@ -3,26 +3,36 @@ import PageContainer from '../../shared/components/PageContainer'
 import { useAppStore } from '../../shared/store/useAppStore'
 
 export default function HistoryPage() {
+    const currentUser = useAppStore((state) => state.currentUser)
     const tryOnHistory = useAppStore((state) => state.tryOnHistory)
     const clearTryOnHistory = useAppStore((state) => state.clearTryOnHistory)
+    const filteredHistory = currentUser
+        ? tryOnHistory.filter((item) => item.userId === currentUser.id)
+        : tryOnHistory
 
     return (
         <PageContainer
             title="历史记录"
             subtitle="查看过往试穿结果与生成记录。"
         >
-            <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <Space orientation="vertical" size={16} style={{ width: '100%' }}>
+                {currentUser ? (
+                    <Card size="small" style={{ borderRadius: 12 }}>
+                        这里展示你的本地试穿历史。
+                    </Card>
+                ) : null}
+
                 <Button danger onClick={clearTryOnHistory} disabled={tryOnHistory.length === 0}>
                     清空试穿记录
                 </Button>
 
-                {tryOnHistory.length === 0 ? (
+                {filteredHistory.length === 0 ? (
                     <Card style={{ borderRadius: 16 }}>
                         <Empty description="还没有试穿记录，先去虚拟试穿页生成一条结果。" />
                     </Card>
                 ) : (
                     <Row gutter={[16, 16]}>
-                        {tryOnHistory.map((item) => (
+                        {filteredHistory.map((item) => (
                             <Col xs={24} md={12} xl={8} key={item.id}>
                                 <Card
                                     hoverable
@@ -37,7 +47,7 @@ export default function HistoryPage() {
                                         />
                                     }
                                 >
-                                    <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                                    <Space orientation="vertical" size={12} style={{ width: '100%' }}>
                                         <div>
                                             <Tag color={item.status === 'success' ? 'green' : 'orange'}>
                                                 {item.status}

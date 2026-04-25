@@ -23,6 +23,7 @@ export interface RecommendResult {
 
 export interface ChatRequest {
     text: string
+    user_id?: number
     session_id?: string
     body_context?: {
         gender: string
@@ -39,4 +40,14 @@ export interface ChatResponse {
     session_id: string
     parsed_result: ParsedStyleResult
     recommend_result?: RecommendResult | null
+}
+
+export interface ChatStreamMeta {
+    session_id: string
+    parsed_result: ParsedStyleResult
+    recommend_result?: RecommendResult | null
+}
+
+export interface ChatStreamChunk {
+    content: string
 }

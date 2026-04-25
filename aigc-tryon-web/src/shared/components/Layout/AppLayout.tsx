@@ -1,26 +1,57 @@
-import { Layout, Menu, Button } from 'antd'
-import {
-    HomeOutlined,
-    CameraOutlined,
-    MessageOutlined,
-    SkinOutlined,
-    HistoryOutlined,
-} from '@ant-design/icons'
+import { useEffect } from 'react'
+import { Layout, Button, Space } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../../../features/user/api'
+import { useAppStore } from '../../store/useAppStore'
 
 const { Header, Content } = Layout
 
-const menuItems = [
-    { key: '/', icon: <HomeOutlined />, label: '首页' },
-    { key: '/analyze', icon: <CameraOutlined />, label: '体型分析' },
-    { key: '/chat', icon: <MessageOutlined />, label: '智能推荐' },
-    { key: '/tryon', icon: <SkinOutlined />, label: '虚拟试穿' },
-    { key: '/history', icon: <HistoryOutlined />, label: '历史记录' },
+const navItems = [
+    { path: '/', label: '首页' },
+    { path: '/analyze', label: '体型分析' },
+    { path: '/chat', label: '智能推荐' },
+    { path: '/tryon', label: '虚拟试穿' },
+    { path: '/history', label: '历史记录' },
+    { path: '/profile', label: '个人中心' },
 ]
 
 export default function AppLayout() {
     const location = useLocation()
     const navigate = useNavigate()
+    const currentUser = useAppStore((state) => state.currentUser)
+    const authToken = useAppStore((state) => state.authToken)
+    const setCurrentUser = useAppStore((state) => state.setCurrentUser)
+    const clearCurrentUser = useAppStore((state) => state.clearCurrentUser)
+    const isAuthenticated = Boolean(currentUser && authToken)
+
+    useEffect(() => {
+        if (!authToken) {
+            return
+        }
+
+        let cancelled = false
+
+        const syncCurrentUser = async () => {
+            try {
+                const user = await getCurrentUser()
+
+                if (!cancelled) {
+                    setCurrentUser(user)
+                }
+            } catch {
+                if (!cancelled) {
+                    clearCurrentUser()
+                    navigate('/', { replace: true })
+                }
+            }
+        }
+
+        void syncCurrentUser()
+
+        return () => {
+            cancelled = true
+        }
+    }, [authToken, clearCurrentUser, navigate, setCurrentUser])
 
     return (
         <Layout style={{ minHeight: '100vh', background: '#f5f7fb' }}>
@@ -37,21 +68,32 @@ export default function AppLayout() {
                     zIndex: 10,
                 }}
             >
-                <div style={{ fontSize: 20, fontWeight: 700, color: '#1f1f1f' }}>
+                <div
+                    onClick={() => navigate('/')}
+                    style={{
+                        fontSize: 20,
+                        fontWeight: 700,
+                        color: '#1f1f1f',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                    }}
+                >
                     AIGC 智能穿搭系统
                 </div>
 
-                <Menu
-                    mode="horizontal"
-                    selectedKeys={[location.pathname]}
-                    items={menuItems}
-                    onClick={({ key }) => navigate(key)}
-                    style={{ flex: 1, minWidth: 0, marginLeft: 32, borderBottom: 'none' }}
-                />
-
-                <Button type="primary" onClick={() => navigate('/tryon')}>
-                    开始体验
-                </Button>
+                {isAuthenticated && currentUser ? (
+                    <Space size={8} wrap>
+                        {navItems.map((item) => (
+                            <Button
+                                key={item.path}
+                                type={location.pathname === item.path ? 'primary' : 'text'}
+                                onClick={() => navigate(item.path)}
+                            >
+                                {item.label}
+                            </Button>
+                        ))}
+                    </Space>
+                ) : null}
             </Header>
 
             <Content style={{ padding: '24px' }}>

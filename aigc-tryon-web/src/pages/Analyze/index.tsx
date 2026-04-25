@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { Button, Card, Col, Descriptions, Row, Space, Tag, Upload, message } from 'antd'
+import { App, Button, Card, Col, Descriptions, Row, Space, Tag, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import PageContainer from '../../shared/components/PageContainer'
 import { analyzeBody } from '../../features/analyze/api'
 import type { BodyAnalysisResult } from '../../features/analyze/types'
+import { getApiErrorMessage } from '../../shared/api/errors'
 import { useAppStore } from '../../shared/store/useAppStore'
 
 export default function AnalyzePage() {
+    const { message } = App.useApp()
+    const currentUser = useAppStore((state) => state.currentUser)
     const [file, setFile] = useState<File | null>(null)
     const [previewUrl, setPreviewUrl] = useState('')
     const [loading, setLoading] = useState(false)
@@ -31,13 +34,12 @@ export default function AnalyzePage() {
 
         try {
             setLoading(true)
-            const data = await analyzeBody(file)
+            const data = await analyzeBody(file, currentUser?.id)
             setResult(data)
             setBodyAnalysis(data)
-            message.success('体型分析完成')
+            message.success(currentUser ? '体型分析完成，已保存到你的记录' : '体型分析完成')
         } catch (error) {
-            console.error(error)
-            message.error('体型分析失败，请检查接口或稍后重试')
+            message.error(getApiErrorMessage(error, '体型分析失败，请检查接口或稍后重试'))
         } finally {
             setLoading(false)
         }
@@ -51,7 +53,7 @@ export default function AnalyzePage() {
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={10}>
                     <Card title="上传用户照片" style={{ borderRadius: 16 }}>
-                        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+                        <Space orientation="vertical" size={16} style={{ width: '100%' }}>
                             <div
                                 style={{
                                     height: 360,
@@ -89,7 +91,7 @@ export default function AnalyzePage() {
                 <Col xs={24} lg={14}>
                     <Card title="分析结果" style={{ borderRadius: 16 }}>
                         {result ? (
-                            <Space direction="vertical" size={16} style={{ width: '100%' }}>
+                            <Space orientation="vertical" size={16} style={{ width: '100%' }}>
                                 <div>
                                     <div style={{ marginBottom: 8, fontWeight: 600 }}>体型类型</div>
                                     <Tag color="blue">{result.body_shape}</Tag>
