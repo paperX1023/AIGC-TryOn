@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from time import sleep
 from uuid import uuid4
 
+from app.services.persistence_service import save_chat_exchange
 from app.services.recommend_service import generate_recommendation
 from app.services.style_service import parse_style_text
 
@@ -45,17 +47,28 @@ def _build_reply_with_recommendation(body_context, parsed_result: dict, recommen
     )
 
 
-def generate_chat_recommendation(data) -> dict:
-    parsed_result = parse_style_text(data.text, use_llm=True)
-    session_id = data.session_id or uuid4().hex
+def _split_reply(reply: str, chunk_size: int = 8):
+    for index in range(0, len(reply), chunk_size):
+        yield reply[index:index + chunk_size]
 
+
+def _build_response_from_parsed(data, parsed_result: dict, session_id: str) -> dict:
     if not data.body_context:
-        return {
+        response = {
             "reply": _build_reply_without_body(parsed_result),
             "session_id": session_id,
             "parsed_result": parsed_result,
             "recommend_result": None,
         }
+        save_chat_exchange(
+            user_id=data.user_id,
+            session_code=session_id,
+            user_text=data.text,
+            assistant_reply=response["reply"],
+            parsed_result=parsed_result,
+            recommend_result=None,
+        )
+        return response
 
     recommend_input = _RecommendInput(
         gender=data.body_context.gender,
@@ -70,9 +83,69 @@ def generate_chat_recommendation(data) -> dict:
 
     recommend_result = generate_recommendation(recommend_input, use_llm_reason=True)
 
-    return {
+    response = {
         "reply": _build_reply_with_recommendation(data.body_context, parsed_result, recommend_result),
         "session_id": session_id,
         "parsed_result": parsed_result,
         "recommend_result": recommend_result,
+    }
+    save_chat_exchange(
+        user_id=data.user_id,
+        session_code=session_id,
+        user_text=data.text,
+        assistant_reply=response["reply"],
+        parsed_result=parsed_result,
+        recommend_result=recommend_result,
+    )
+    return response
+
+
+def _build_response(data) -> dict:
+    parsed_result = parse_style_text(data.text, use_llm=True)
+    session_id = data.session_id or uuid4().hex
+    return _build_response_from_parsed(data, parsed_result, session_id)
+
+
+def generate_chat_recommendation(data) -> dict:
+    return _build_response(data)
+
+
+def stream_chat_recommendation(data):
+    session_id = data.session_id or uuid4().hex
+    yield {
+        "event": "session",
+        "data": {"session_id": session_id},
+    }
+
+    parsed_result = parse_style_text(data.text, use_llm=True)
+    yield {
+        "event": "meta",
+        "data": {
+            "session_id": session_id,
+            "parsed_result": parsed_result,
+            "recommend_result": None,
+        },
+    }
+
+    response = _build_response_from_parsed(data, parsed_result, session_id)
+    if response["recommend_result"] is not None:
+        yield {
+            "event": "meta",
+            "data": {
+                "session_id": response["session_id"],
+                "parsed_result": response["parsed_result"],
+                "recommend_result": response["recommend_result"],
+            },
+        }
+
+    for chunk in _split_reply(response["reply"]):
+        yield {
+            "event": "chunk",
+            "data": {"content": chunk},
+        }
+        sleep(0.02)
+
+    yield {
+        "event": "done",
+        "data": response,
     }

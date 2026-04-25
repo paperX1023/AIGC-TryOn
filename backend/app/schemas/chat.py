@@ -4,19 +4,21 @@ from pydantic import BaseModel
 
 from app.schemas.recommend import RecommendResult
 from app.schemas.style import StyleParsedResult
+from app.schemas.taxonomy import BodyShape, Gender, LegRatio, ShoulderType, WaistType
 
 
 class ChatBodyContext(BaseModel):
-    gender: str = "未知"
-    body_shape: str
-    shoulder_type: str
-    waist_type: str
-    leg_ratio: str
+    gender: Gender = Gender.UNKNOWN
+    body_shape: BodyShape
+    shoulder_type: ShoulderType
+    waist_type: WaistType
+    leg_ratio: LegRatio
     analysis_summary: Optional[str] = None
 
 
 class ChatRecommendRequest(BaseModel):
     text: str
+    user_id: Optional[int] = None
     session_id: Optional[str] = None
     body_context: Optional[ChatBodyContext] = None
 

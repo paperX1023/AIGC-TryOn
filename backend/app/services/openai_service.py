@@ -1,9 +1,12 @@
 import base64
 import json
+from enum import Enum
 from pathlib import Path
 
 from openai import OpenAI
 from app.core.config import settings
+from app.schemas.style import StyleParsedResult
+from app.schemas.taxonomy import GoalTag, SceneTag, StyleTag
 
 client = OpenAI(api_key=settings.openai_api_key) if settings.openai_api_key else None
 
@@ -27,6 +30,39 @@ def _image_path_to_data_url(image_path: str) -> str:
     return f"data:{media_type};base64,{encoded}"
 
 
+def _build_style_parse_schema() -> dict:
+    return {
+        "type": "object",
+        "properties": {
+            "styles": {
+                "type": "array",
+                "items": {"type": "string", "enum": StyleTag.values()},
+                "minItems": 1,
+                "maxItems": 3,
+            },
+            "scene": {"type": "string", "enum": SceneTag.values()},
+            "goals": {
+                "type": "array",
+                "items": {"type": "string", "enum": GoalTag.values()},
+                "minItems": 1,
+                "maxItems": 3,
+            },
+        },
+        "required": ["styles", "scene", "goals"],
+        "additionalProperties": False,
+    }
+
+
+def _to_json_safe(value):
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, dict):
+        return {key: _to_json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_to_json_safe(item) for item in value]
+    return value
+
+
 def parse_style_text_with_llm(text: str) -> dict:
     response = _ensure_client().responses.create(
         model=settings.openai_model,
@@ -39,6 +75,9 @@ def parse_style_text_with_llm(text: str) -> dict:
                         "text": (
                             "你是一个穿搭需求解析助手。"
                             "请把用户输入解析成结构化结果。"
+                            "风格 styles 只能从这些标签中选择：韩系、简约、通勤、甜美、休闲、中国风。"
+                            "场景 scene 只能从这些标签中选择：日常、上课、面试、约会、出游。"
+                            "目标 goals 只能从这些标签中选择：显瘦、显高、舒适。"
                             "你必须返回 JSON，并严格符合给定 schema。"
                         )
                     }
@@ -55,21 +94,12 @@ def parse_style_text_with_llm(text: str) -> dict:
             "format": {
                 "type": "json_schema",
                 "name": "style_parse_result",
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "styles": {"type": "array", "items": {"type": "string"}},
-                        "scene": {"type": "string"},
-                        "goals": {"type": "array", "items": {"type": "string"}}
-                    },
-                    "required": ["styles", "scene", "goals"],
-                    "additionalProperties": False
-                }
+                "schema": _build_style_parse_schema(),
             }
         }
     )
 
-    return json.loads(response.output_text)
+    return StyleParsedResult.model_validate(json.loads(response.output_text)).model_dump(mode="json")
 
 
 def generate_recommend_reason_with_llm(input_summary: dict, recommend_result: dict) -> str:
@@ -97,8 +127,8 @@ def generate_recommend_reason_with_llm(input_summary: dict, recommend_result: di
                     {
                         "type": "input_text",
                         "text": (
-                            f"用户信息：{json.dumps(input_summary, ensure_ascii=False)}\n"
-                            f"推荐结果：{json.dumps(recommend_result, ensure_ascii=False)}"
+                            f"用户信息：{json.dumps(_to_json_safe(input_summary), ensure_ascii=False)}\n"
+                            f"推荐结果：{json.dumps(_to_json_safe(recommend_result), ensure_ascii=False)}"
                         )
                     }
                 ]

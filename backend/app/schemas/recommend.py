@@ -1,33 +1,44 @@
 from pydantic import BaseModel
 from typing import List
 
+from app.schemas.taxonomy import (
+    BodyShape,
+    Gender,
+    GoalTag,
+    LegRatio,
+    SceneTag,
+    ShoulderType,
+    StyleTag,
+    WaistType,
+)
+
 
 class RecommendRequest(BaseModel):
-    gender: str = "未知"
-    body_shape: str
-    shoulder_type: str
-    waist_type: str
-    leg_ratio: str
-    styles: List[str]
-    scene: str
-    goals: List[str]
+    gender: Gender = Gender.UNKNOWN
+    body_shape: BodyShape
+    shoulder_type: ShoulderType
+    waist_type: WaistType
+    leg_ratio: LegRatio
+    styles: List[StyleTag]
+    scene: SceneTag
+    goals: List[GoalTag]
 
 
 class RecommendInputSummary(BaseModel):
-    gender: str
-    body_shape: str
-    shoulder_type: str
-    waist_type: str
-    leg_ratio: str
-    styles: List[str]
-    scene: str
-    goals: List[str]
+    gender: Gender
+    body_shape: BodyShape
+    shoulder_type: ShoulderType
+    waist_type: WaistType
+    leg_ratio: LegRatio
+    styles: List[StyleTag]
+    scene: SceneTag
+    goals: List[GoalTag]
 
 
 class RecommendItem(BaseModel):
     name: str
     category: str
-    target_gender: str
+    target_gender: Gender
 
 
 class RecommendResult(BaseModel):

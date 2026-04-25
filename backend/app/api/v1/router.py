@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import body, chat, health, recommend, style, tryon
+from app.api.v1.endpoints import body, chat, health, recommend, style, tryon, users, wardrobe
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -9,3 +9,5 @@ api_router.include_router(body.router, prefix="/body", tags=["body"])
 api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 api_router.include_router(recommend.router, tags=["recommend"])
 api_router.include_router(tryon.router, tags=["tryon"])
+api_router.include_router(users.router, tags=["users"])
+api_router.include_router(wardrobe.router, tags=["wardrobe"])
