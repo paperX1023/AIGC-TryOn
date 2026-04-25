@@ -7,3 +7,6 @@ pydantic-settings
 openai
 requests
 python-multipart
+SQLAlchemy
+PyMySQL
+cryptography
