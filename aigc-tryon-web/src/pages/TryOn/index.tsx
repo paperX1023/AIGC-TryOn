@@ -8,7 +8,6 @@ import {
     UploadOutlined,
 } from '@ant-design/icons'
 import { createTryOn } from '../../features/tryon/api'
-import type { TryOnResult } from '../../features/tryon/types'
 import { listWardrobeItems, uploadWardrobeItem } from '../../features/wardrobe/api'
 import type { WardrobeItem } from '../../features/wardrobe/types'
 import PageContainer from '../../shared/components/PageContainer'
@@ -16,7 +15,7 @@ import { getApiErrorMessage } from '../../shared/api/errors'
 import { resolveApiAssetUrl } from '../../shared/api/assets'
 import { useAppStore } from '../../shared/store/useAppStore'
 
-const { Text } = Typography
+const { Paragraph } = Typography
 
 function getWardrobeSourceLabel(source: WardrobeItem['source']) {
     if (source === 'user') {
@@ -32,25 +31,43 @@ function getUploadDisplayName(fileName: string) {
     return fileName.replace(/\.[^.]+$/, '').trim() || '上传服装'
 }
 
+function readFileAsDataUrl(file: File) {
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result || ''))
+        reader.onerror = () => reject(reader.error || new Error('读取图片失败'))
+        reader.readAsDataURL(file)
+    })
+}
+
+async function dataUrlToFile(dataUrl: string, fileName: string) {
+    const response = await fetch(dataUrl)
+    const blob = await response.blob()
+    const mimeType = blob.type || 'image/png'
+    const fallbackName = fileName || `person-image.${mimeType.split('/')[1] || 'png'}`
+    return new File([blob], fallbackName, { type: mimeType })
+}
+
 export default function TryOnPage() {
     const { message } = App.useApp()
     const currentUser = useAppStore((state) => state.currentUser)
     const bodyAnalysis = useAppStore((state) => state.bodyAnalysis)
     const currentChatSessionId = useAppStore((state) => state.currentChatSessionId)
+    const tryOnDraft = useAppStore((state) => state.tryOnDraft)
     const addTryOnHistory = useAppStore((state) => state.addTryOnHistory)
+    const setTryOnSelectedWardrobeItemId = useAppStore((state) => state.setTryOnSelectedWardrobeItemId)
+    const setTryOnPersonDraft = useAppStore((state) => state.setTryOnPersonDraft)
+    const setTryOnResult = useAppStore((state) => state.setTryOnResult)
     const sessionClothFilesRef = useRef<Map<string, File>>(new Map())
     const [personFile, setPersonFile] = useState<File | null>(null)
-    const [personPreview, setPersonPreview] = useState('')
     const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([])
-    const [selectedWardrobeItemId, setSelectedWardrobeItemId] = useState('')
-    const [result, setResult] = useState<TryOnResult | null>(null)
     const [loading, setLoading] = useState(false)
     const [wardrobeLoading, setWardrobeLoading] = useState(false)
     const [uploadingWardrobe, setUploadingWardrobe] = useState(false)
 
     const selectedWardrobeItem = useMemo(
-        () => wardrobeItems.find((item) => item.id === selectedWardrobeItemId) || null,
-        [selectedWardrobeItemId, wardrobeItems],
+        () => wardrobeItems.find((item) => item.id === tryOnDraft.selectedWardrobeItemId) || null,
+        [tryOnDraft.selectedWardrobeItemId, wardrobeItems],
     )
 
     const loadWardrobe = useCallback(async () => {
@@ -58,27 +75,30 @@ export default function TryOnPage() {
             setWardrobeLoading(true)
             const items = await listWardrobeItems({ userId: currentUser?.id })
             setWardrobeItems(items)
-            setSelectedWardrobeItemId((prev) => (
-                items.some((item) => item.id === prev) ? prev : items[0]?.id || ''
-            ))
+            const nextSelectedId = items.some((item) => item.id === tryOnDraft.selectedWardrobeItemId)
+                ? tryOnDraft.selectedWardrobeItemId
+                : items[0]?.id || ''
+            setTryOnSelectedWardrobeItemId(nextSelectedId)
         } catch (error) {
             message.error(getApiErrorMessage(error, '获取服装库失败'))
         } finally {
             setWardrobeLoading(false)
         }
-    }, [currentUser?.id, message])
+    }, [currentUser?.id, message, setTryOnSelectedWardrobeItemId, tryOnDraft.selectedWardrobeItemId])
 
     useEffect(() => {
         void loadWardrobe()
     }, [loadWardrobe])
 
-    const handleSelectPerson = (file: File) => {
-        if (personPreview) {
-            URL.revokeObjectURL(personPreview)
+    const handleSelectPerson = async (file: File) => {
+        try {
+            setPersonFile(file)
+            const dataUrl = await readFileAsDataUrl(file)
+            setTryOnPersonDraft(dataUrl, dataUrl, file.name)
+            setTryOnResult(null)
+        } catch (error) {
+            message.error(getApiErrorMessage(error, '读取人物图失败，请重新上传'))
         }
-        setPersonFile(file)
-        setPersonPreview(URL.createObjectURL(file))
-        setResult(null)
         return false
     }
 
@@ -94,8 +114,8 @@ export default function TryOnPage() {
                 sessionClothFilesRef.current.set(item.id, file)
             }
             setWardrobeItems((prev) => [item, ...prev.filter((prevItem) => prevItem.id !== item.id)])
-            setSelectedWardrobeItemId(item.id)
-            setResult(null)
+            setTryOnSelectedWardrobeItemId(item.id)
+            setTryOnResult(null)
             message.success(item.detection_result?.message || '已加入服装库')
         } catch (error) {
             message.error(getApiErrorMessage(error, '服装检测未通过，请上传清晰的单件服装图'))
@@ -107,7 +127,14 @@ export default function TryOnPage() {
     }
 
     const handleTryOn = async () => {
-        if (!personFile) {
+        let nextPersonFile = personFile
+
+        if (!nextPersonFile && tryOnDraft.personDataUrl) {
+            nextPersonFile = await dataUrlToFile(tryOnDraft.personDataUrl, tryOnDraft.personFileName)
+            setPersonFile(nextPersonFile)
+        }
+
+        if (!nextPersonFile) {
             message.warning('请先上传人物图')
             return
         }
@@ -124,12 +151,12 @@ export default function TryOnPage() {
 
         try {
             setLoading(true)
-            const data = await createTryOn(personFile, sessionClothFile, {
+            const data = await createTryOn(nextPersonFile, sessionClothFile, {
                 wardrobeItemId: sessionClothFile ? undefined : selectedWardrobeItem.id,
                 userId: currentUser?.id,
                 sessionId: currentChatSessionId || undefined,
             })
-            setResult(data)
+            setTryOnResult(data)
             addTryOnHistory({
                 id: `${Date.now()}`,
                 userId: currentUser?.id || null,
@@ -180,9 +207,9 @@ export default function TryOnPage() {
                                     overflow: 'hidden',
                                 }}
                             >
-                                {personPreview ? (
+                                {tryOnDraft.personPreviewUrl || tryOnDraft.result?.person_image_url ? (
                                     <Image
-                                        src={personPreview}
+                                        src={tryOnDraft.personPreviewUrl || resolveApiAssetUrl(tryOnDraft.result?.person_image_url || '')}
                                         alt="人物图预览"
                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                         preview={false}
@@ -194,7 +221,7 @@ export default function TryOnPage() {
 
                             <Card size="small" styles={{ body: { padding: 12 } }}>
                                 {selectedWardrobeItem ? (
-                                    <Space size={12} align="center" style={{ width: '100%' }}>
+                                    <Space size={12} align="start" style={{ width: '100%' }}>
                                         <Image
                                             src={resolveApiAssetUrl(selectedWardrobeItem.image_url)}
                                             alt={selectedWardrobeItem.name}
@@ -203,8 +230,20 @@ export default function TryOnPage() {
                                             style={{ objectFit: 'contain', borderRadius: 8, background: '#fafafa' }}
                                             preview={false}
                                         />
-                                        <Space orientation="vertical" size={6} style={{ minWidth: 0 }}>
-                                            <Text strong ellipsis>{selectedWardrobeItem.name}</Text>
+                                        <Space orientation="vertical" size={6} style={{ flex: 1, minWidth: 0 }}>
+                                            <Paragraph
+                                                strong
+                                                ellipsis={{ rows: 2, tooltip: selectedWardrobeItem.name }}
+                                                style={{
+                                                    margin: 0,
+                                                    width: '100%',
+                                                    lineHeight: 1.5,
+                                                    overflowWrap: 'anywhere',
+                                                    wordBreak: 'break-word',
+                                                }}
+                                            >
+                                                {selectedWardrobeItem.name}
+                                            </Paragraph>
                                             <Space wrap size={6}>
                                                 <Tag>{selectedWardrobeItem.category}</Tag>
                                                 <Tag color={getWardrobeSourceLabel(selectedWardrobeItem.source).color}>
@@ -227,11 +266,11 @@ export default function TryOnPage() {
                                 开始试穿
                             </Button>
 
-                            {result && (
+                            {tryOnDraft.result && (
                                 <Card size="small">
                                     <div style={{ lineHeight: 1.8 }}>
-                                        <div>状态：{result.status}</div>
-                                        <div>{result.message}</div>
+                                        <div>状态：{tryOnDraft.result.status}</div>
+                                        <div>{tryOnDraft.result.message}</div>
                                     </div>
                                 </Card>
                             )}
@@ -277,15 +316,15 @@ export default function TryOnPage() {
                             >
                                 {wardrobeItems.map((item) => {
                                     const source = getWardrobeSourceLabel(item.source)
-                                    const selected = item.id === selectedWardrobeItemId
+                                    const selected = item.id === tryOnDraft.selectedWardrobeItemId
 
                                     return (
                                         <button
                                             type="button"
                                             key={item.id}
                                             onClick={() => {
-                                                setSelectedWardrobeItemId(item.id)
-                                                setResult(null)
+                                                setTryOnSelectedWardrobeItemId(item.id)
+                                                setTryOnResult(null)
                                             }}
                                             style={{
                                                 appearance: 'none',
@@ -317,9 +356,19 @@ export default function TryOnPage() {
                                                 />
                                             </div>
                                             <Space orientation="vertical" size={6} style={{ width: '100%' }}>
-                                                <Text strong ellipsis style={{ width: '100%' }}>
+                                                <Paragraph
+                                                    ellipsis={{ rows: 2, tooltip: item.name }}
+                                                    style={{
+                                                        margin: 0,
+                                                        width: '100%',
+                                                        lineHeight: 1.5,
+                                                        fontWeight: 600,
+                                                        overflowWrap: 'anywhere',
+                                                        wordBreak: 'break-word',
+                                                    }}
+                                                >
                                                     {item.name}
-                                                </Text>
+                                                </Paragraph>
                                                 <Space size={4} wrap>
                                                     <Tag style={{ marginInlineEnd: 0 }}>{item.category}</Tag>
                                                     <Tag color={source.color} style={{ marginInlineEnd: 0 }}>
@@ -356,9 +405,9 @@ export default function TryOnPage() {
                                 overflow: 'hidden',
                             }}
                         >
-                            {result ? (
+                            {tryOnDraft.result ? (
                                 <Image
-                                    src={resolveApiAssetUrl(result.result_image_url)}
+                                    src={resolveApiAssetUrl(tryOnDraft.result.result_image_url)}
                                     alt="试穿结果"
                                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                 />

@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+# AIGC-TryOn Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是 AIGC-TryOn 的前端应用，基于 React、TypeScript、Vite 和 Ant Design 构建。前端负责用户登录、体型分析上传、聊天式穿搭推荐、衣橱管理、虚拟试穿和历史记录展示。
 
-Currently, two official plugins are available:
+## 功能页面
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| 路由 | 说明 |
+| --- | --- |
+| `/` | 首页与功能入口 |
+| `/analyze` | 上传人物照片并查看体型分析结果 |
+| `/chat` | 聊天式穿搭推荐 |
+| `/tryon` | 上传人物图和服装图，生成试穿结果 |
+| `/history` | 查看体型分析、推荐和试穿历史 |
+| `/profile` | 用户资料与偏好维护 |
 
-## React Compiler
+除首页外，其余页面会通过 `RequireUser` 要求当前用户已登录。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 技术栈
 
-## Expanding the ESLint configuration
+- React 19
+- TypeScript
+- Vite
+- Ant Design
+- Zustand
+- Axios
+- React Router
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 本地启动
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+默认访问地址：
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+http://127.0.0.1:5173
 ```
+
+后端默认地址写在 [src/shared/api/client.ts](src/shared/api/client.ts)：
+
+```ts
+export const API_BASE_URL = 'http://127.0.0.1:8000/'
+```
+
+如需接入其他后端地址，可修改该常量或后续改造为 Vite 环境变量。
+
+## 常用命令
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
+
+## 目录说明
+
+```text
+src/
+|-- app/                 # 路由、应用根组件、登录守卫
+|-- features/            # 业务 API 与类型定义
+|-- pages/               # 页面级组件
+|-- shared/              # 通用 API、状态和布局组件
+`-- styles/              # 全局样式
+```
+
+## 与后端的接口关系
+
+前端接口路径统一维护在 [src/shared/api/endpoints.ts](src/shared/api/endpoints.ts)，Axios 实例统一维护在 [src/shared/api/client.ts](src/shared/api/client.ts)。图片资源路径会通过 [src/shared/api/assets.ts](src/shared/api/assets.ts) 转成可访问 URL。

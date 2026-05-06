@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1160" viewBox="0 0 1800 1160">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 38px; font-weight: 700; fill: #1f2937; }
+      .caption { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 19px; fill: #64748b; }
+      .entity { fill: #f8fafc; stroke: #8aa0b8; stroke-width: 2.2; }
+      .entity-head { fill: #1f4e79; stroke: #183f63; stroke-width: 2.2; }
+      .entity-title { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #ffffff; }
+      .field { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 18px; fill: #263445; }
+      .field-muted { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 17px; fill: #526173; }
+      .tag-pk { fill: #e8f1f8; stroke: #6d88a5; stroke-width: 1.3; }
+      .tag-fk { fill: #f5efe5; stroke: #a88960; stroke-width: 1.3; }
+      .tag-uk { fill: #edf6ed; stroke: #6fa16f; stroke-width: 1.3; }
+      .tag-text { font-family: Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #27364a; }
+      .line { stroke: #64748b; stroke-width: 2.4; fill: none; }
+      .line-soft { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-dasharray: 7 7; }
+      .relation { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 17px; fill: #334155; }
+      .card-line { stroke: #d7dee8; stroke-width: 1.2; }
+      .marker { fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1800" height="1160"/>
+  <text class="title" x="900" y="62" text-anchor="middle">数据库核心实体关系图</text>
+  <text class="caption" x="900" y="94" text-anchor="middle">仅展示主键、外键与核心业务字段，完整字段信息见后续数据表说明</text>
+
+  <!-- relationship lines -->
+  <path class="line" d="M900 330 L900 384"/>
+  <text class="relation" x="908" y="352">1</text>
+  <text class="relation" x="908" y="381">N</text>
+
+  <path class="line" d="M690 244 L450 410"/>
+  <text class="relation" x="672" y="256">1</text>
+  <text class="relation" x="460" y="399">N</text>
+
+  <path class="line" d="M1110 244 L1350 410"/>
+  <text class="relation" x="1121" y="256">1</text>
+  <text class="relation" x="1324" y="399">N</text>
+
+  <path class="line" d="M720 330 L450 790"/>
+  <text class="relation" x="704" y="354">1</text>
+  <text class="relation" x="459" y="781">N</text>
+
+  <path class="line" d="M900 330 L900 790"/>
+  <text class="relation" x="878" y="354">1</text>
+  <text class="relation" x="878" y="781">N</text>
+
+  <path class="line" d="M450 620 L450 790"/>
+  <text class="relation" x="458" y="644">1</text>
+  <text class="relation" x="458" y="781">N</text>
+
+  <path class="line-soft" d="M690 515 L620 515 L620 665 L900 665 L900 620"/>
+  <text class="relation" x="640" y="505">最近身材分析</text>
+
+  <path class="line" d="M900 620 L900 790"/>
+  <text class="relation" x="908" y="644">1</text>
+  <text class="relation" x="908" y="781">N</text>
+
+  <path class="line" d="M1110 515 L1320 515 L1320 790"/>
+  <text class="relation" x="1120" y="505">1</text>
+  <text class="relation" x="1328" y="781">N</text>
+
+  <path class="line" d="M690 560 L520 560 L520 840"/>
+  <text class="relation" x="646" y="550">1</text>
+  <text class="relation" x="528" y="831">N</text>
+
+  <!-- users -->
+  <g transform="translate(690 130)">
+    <rect class="entity" x="0" y="0" width="420" height="200" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">用户表 users</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：用户编号</text>
+    <rect class="tag-uk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">UK</text>
+    <text class="field" x="72" y="130">username：用户名</text>
+    <text class="field-muted" x="72" y="163">gender / height_cm / weight_kg：基础体征</text>
+  </g>
+
+  <!-- body analysis -->
+  <g transform="translate(240 410)">
+    <rect class="entity" x="0" y="0" width="420" height="210" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">身材分析记录表</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：分析记录编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">user_id：用户编号</text>
+    <text class="field-muted" x="72" y="163">body_shape：体型结果</text>
+    <text class="field-muted" x="72" y="193">shoulder_type / waist_type / leg_ratio</text>
+  </g>
+
+  <!-- chat sessions -->
+  <g transform="translate(690 410)">
+    <rect class="entity" x="0" y="0" width="420" height="210" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">聊天会话表 chat_sessions</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：会话编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">user_id：用户编号</text>
+    <rect class="tag-fk" x="24" y="148" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="164" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="165">latest_body_analysis_id：最近分析记录</text>
+    <text class="field-muted" x="72" y="195">session_code / status：会话编码与状态</text>
+  </g>
+
+  <!-- wardrobe -->
+  <g transform="translate(1140 410)">
+    <rect class="entity" x="0" y="0" width="420" height="210" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">衣橱单品表 wardrobe_items</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：衣物编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">user_id：用户编号</text>
+    <text class="field-muted" x="72" y="163">name / category：衣物名称与类别</text>
+    <text class="field-muted" x="72" y="193">image_url：衣物图片地址</text>
+  </g>
+
+  <!-- tryon -->
+  <g transform="translate(240 790)">
+    <rect class="entity" x="0" y="0" width="420" height="250" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">试衣记录表 tryon_records</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：试衣记录编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">user_id：用户编号</text>
+    <rect class="tag-fk" x="24" y="148" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="164" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="165">chat_session_id：聊天会话编号</text>
+    <rect class="tag-fk" x="24" y="183" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="199" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="200">body_analysis_record_id：身材分析编号</text>
+    <text class="field-muted" x="72" y="232">status / result_image_url：状态与结果图</text>
+  </g>
+
+  <!-- recommendation -->
+  <g transform="translate(690 790)">
+    <rect class="entity" x="0" y="0" width="420" height="230" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">推荐记录表</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：推荐记录编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">user_id：用户编号</text>
+    <rect class="tag-fk" x="24" y="148" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="164" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="165">chat_session_id：聊天会话编号</text>
+    <text class="field-muted" x="72" y="198">input_summary / recommend_result：推荐内容</text>
+  </g>
+
+  <!-- chat messages -->
+  <g transform="translate(1140 790)">
+    <rect class="entity" x="0" y="0" width="420" height="220" rx="10"/>
+    <rect class="entity-head" x="0" y="0" width="420" height="58" rx="10"/>
+    <text class="entity-title" x="210" y="37" text-anchor="middle">聊天消息表 chat_messages</text>
+    <line class="card-line" x1="0" y1="58" x2="420" y2="58"/>
+    <rect class="tag-pk" x="24" y="78" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="94" text-anchor="middle">PK</text>
+    <text class="field" x="72" y="95">id：消息编号</text>
+    <rect class="tag-fk" x="24" y="113" width="34" height="22" rx="4"/>
+    <text class="tag-text" x="41" y="129" text-anchor="middle">FK</text>
+    <text class="field" x="72" y="130">chat_session_id：聊天会话编号</text>
+    <text class="field-muted" x="72" y="163">role：消息角色</text>
+    <text class="field-muted" x="72" y="193">content / recommend_result：消息与推荐结果</text>
+  </g>
+
+  <text class="caption" x="900" y="1110" text-anchor="middle">说明：1 表示一端实体，N 表示多端实体；虚线表示可选关联或上下文引用关系。</text>
+</svg>

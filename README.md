@@ -1,264 +1,49 @@
-<<<<<<< HEAD
-
-<div align="center">
-<h1>IDM-VTON: Improving Diffusion Models for Authentic Virtual Try-on in the Wild</h1>
-
-<a href='https://idm-vton.github.io'><img src='https://img.shields.io/badge/Project-Page-green'></a>
-<a href='https://arxiv.org/abs/2403.05139'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a>
-<a href='https://huggingface.co/spaces/yisol/IDM-VTON'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-yellow'></a>
-<a href='https://huggingface.co/yisol/IDM-VTON'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue'></a>
-
-
-</div>
-
-This is the official implementation of the paper ["Improving Diffusion Models for Authentic Virtual Try-on in the Wild"](https://arxiv.org/abs/2403.05139).
-
-Star ⭐ us if you like it!
-
----
-
-
-![teaser2](assets/teaser2.png)&nbsp;
-![teaser](assets/teaser.png)&nbsp;
-
-
-
-## Requirements
-
-```
-git clone https://github.com/yisol/IDM-VTON.git
-cd IDM-VTON
-
-conda env create -f environment.yaml
-conda activate idm
-```
-
-## Data preparation
-
-### VITON-HD
-You can download VITON-HD dataset from [VITON-HD](https://github.com/shadow2496/VITON-HD).
-
-After download VITON-HD dataset, move vitonhd_test_tagged.json into the test folder, and move vitonhd_train_tagged.json into the train folder.
-
-Structure of the Dataset directory should be as follows.
-
-```
-
-train
-|-- image
-|-- image-densepose
-|-- agnostic-mask
-|-- cloth
-|-- vitonhd_train_tagged.json
-
-test
-|-- image
-|-- image-densepose
-|-- agnostic-mask
-|-- cloth
-|-- vitonhd_test_tagged.json
-
-```
-
-### DressCode
-You can download DressCode dataset from [DressCode](https://github.com/aimagelab/dress-code).
-
-We provide pre-computed densepose images and captions for garments [here](https://kaistackr-my.sharepoint.com/:u:/g/personal/cpis7_kaist_ac_kr/EaIPRG-aiRRIopz9i002FOwBDa-0-BHUKVZ7Ia5yAVVG3A?e=YxkAip).
-
-We used [detectron2](https://github.com/facebookresearch/detectron2) for obtaining densepose images, refer [here](https://github.com/sangyun884/HR-VITON/issues/45) for more details.
-
-After download the DressCode dataset, place image-densepose directories and caption text files as follows.
-
-```
-DressCode
-|-- dresses
-    |-- images
-    |-- image-densepose
-    |-- dc_caption.txt
-    |-- ...
-|-- lower_body
-    |-- images
-    |-- image-densepose
-    |-- dc_caption.txt
-    |-- ...
-|-- upper_body
-    |-- images
-    |-- image-densepose
-    |-- dc_caption.txt
-    |-- ...
-```
-
-
-## Training
-
-
-### Preparation
-
-Download pre-trained ip-adapter for sdxl(IP-Adapter/sdxl_models/ip-adapter-plus_sdxl_vit-h.bin) and image encoder(IP-Adapter/models/image_encoder) [here](https://github.com/tencent-ailab/IP-Adapter).
-
-```
-git clone https://huggingface.co/h94/IP-Adapter
-```
-
-Move ip-adapter to ckpt/ip_adapter, and image encoder to ckpt/image_encoder.
-
-Start training using python file with arguments,
-
-```
-accelerate launch train_xl.py \
-    --gradient_checkpointing --use_8bit_adam \
-    --output_dir=result --train_batch_size=6 \
-    --data_dir=DATA_DIR
-```
-
-or, you can simply run with the script file.
-
-```
-sh train_xl.sh
-```
-
-
-## Inference
-
-
-### VITON-HD
-
-Inference using python file with arguments,
-
-```
-accelerate launch inference.py \
-    --width 768 --height 1024 --num_inference_steps 30 \
-    --output_dir "result" \
-    --unpaired \
-    --data_dir "DATA_DIR" \
-    --seed 42 \
-    --test_batch_size 2 \
-    --guidance_scale 2.0
-```
-
-or, you can simply run with the script file.
-
-```
-sh inference.sh
-```
-
-### DressCode
-
-For DressCode dataset, put the category you want to generate images via category argument,
-```
-accelerate launch inference_dc.py \
-    --width 768 --height 1024 --num_inference_steps 30 \
-    --output_dir "result" \
-    --unpaired \
-    --data_dir "DATA_DIR" \
-    --seed 42 
-    --test_batch_size 2
-    --guidance_scale 2.0
-    --category "upper_body" 
-```
-
-or, you can simply run with the script file.
-```
-sh inference.sh
-```
-
-## Start a local gradio demo <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a>
-
-Download checkpoints for human parsing [here](https://huggingface.co/spaces/yisol/IDM-VTON/tree/main/ckpt).
-
-Place the checkpoints under the ckpt folder.
-```
-ckpt
-|-- densepose
-    |-- model_final_162be9.pkl
-|-- humanparsing
-    |-- parsing_atr.onnx
-    |-- parsing_lip.onnx
-
-|-- openpose
-    |-- ckpts
-        |-- body_pose_model.pth
-    
-```
-
-
-
-
-Run the following command:
-
-```python
-python gradio_demo/app.py
-```
-
-
-
-
-
-
-## Acknowledgements
-
-
-Thanks [ZeroGPU](https://huggingface.co/zero-gpu-explorers) for providing free GPU.
-
-Thanks [IP-Adapter](https://github.com/tencent-ailab/IP-Adapter) for base codes.
-
-Thanks [OOTDiffusion](https://github.com/levihsu/OOTDiffusion) and [DCI-VTON](https://github.com/bcmi/DCI-VTON-Virtual-Try-On) for masking generation.
-
-Thanks [SCHP](https://github.com/GoGoDuck912/Self-Correction-Human-Parsing) for human segmentation.
-
-Thanks [Densepose](https://github.com/facebookresearch/DensePose) for human densepose.
-
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=yisol/IDM-VTON&type=Date)](https://star-history.com/#yisol/IDM-VTON&Date)
-
-
-
-## Citation
-```
-@article{choi2024improving,
-  title={Improving Diffusion Models for Authentic Virtual Try-on in the Wild},
-  author={Choi, Yisol and Kwak, Sangkyung and Lee, Kyungmin and Choi, Hyungwon and Shin, Jinwoo},
-  journal={arXiv preprint arXiv:2403.05139},
-  year={2024}
-}
-```
-
-
-
-## License
-The codes and checkpoints in this repository are under the [CC BY-NC-SA 4.0 license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
-
-
-=======
 # AIGC-TryOn
 
-毕设项目：基于 AIGC 的智能穿搭推荐与虚拟试穿系统。
+基于 AIGC 的智能穿搭推荐与虚拟试穿系统。项目面向毕业设计场景，提供从用户画像、体型分析、衣橱管理、对话式穿搭推荐到虚拟试穿结果保存的完整链路。
 
-## 项目结构
+仓库地址：[paperX1023/AIGC-TryOn](https://github.com/paperX1023/AIGC-TryOn)
 
-- `aigc-tryon-web`: React + TypeScript + Vite 前端
-- `backend`: FastAPI 后端，包含体型分析、性别识别、穿搭推荐和虚拟试穿接口
+## 系统能力
 
-## 当前能力
+- 用户注册、登录、个人资料维护与用户仪表盘
+- 上传人物照片，结合 MediaPipe 姿态关键点进行体型分析
+- 基于性别、体型、风格、场景和目标生成穿搭推荐
+- 聊天式推荐接口，支持普通响应与流式响应
+- 衣橱图片上传、分类识别与用户衣物管理
+- 虚拟试穿上传链路，支持远程推理服务和本地占位结果
+- MySQL 持久化，记录用户、体型分析、聊天、推荐、衣橱和试穿历史
 
-- 上传人物照片进行体型分析
-- 基于图片进行性别识别
-- 根据体型、性别、场景和目标生成分类穿搭推荐
-- 聊天式推荐接口
-- 虚拟试穿上传链路和结果展示
+## 技术栈
 
-## 前端启动
+| 模块 | 技术 |
+| --- | --- |
+| 前端 | React 19、TypeScript、Vite、Ant Design、Zustand、Axios |
+| 后端 | FastAPI、Pydantic、SQLAlchemy、PyMySQL、MediaPipe、OpenCV |
+| 数据库 | MySQL 8.x |
+| AI 能力 | OpenAI API、MediaPipe Pose、IDM-VTON 云端推理适配 |
+| 工程化 | ESLint、Pytest、GitHub |
 
-```bash
-cd aigc-tryon-web
-npm install
-npm run dev
+## 目录结构
+
+```text
+AIGC-TryOn/
+|-- aigc-tryon-web/          # React + TypeScript 前端应用
+|-- backend/                 # FastAPI 后端服务
+|   |-- app/                 # API、服务、Schema、数据库模型
+|   |-- models/              # 轻量模型文件，例如 pose_landmarker_lite.task
+|   |-- sql/                 # MySQL 初始化脚本
+|   `-- tests/               # 后端测试
+|-- cloud_inference/         # 云端虚拟试穿推理代码与部署入口
+|-- docs/                    # 项目介绍、快速开始、架构图和流程图
+|-- scripts/                 # 环境与模型准备脚本
+|-- .gitignore
+`-- README.md
 ```
 
-## 后端启动
+## 快速开始
+
+### 1. 启动后端
 
 ```bash
 cd backend
@@ -270,16 +55,105 @@ python -m uvicorn app.main:app --reload
 Windows PowerShell:
 
 ```powershell
+cd backend
 Copy-Item .env.example .env
 python -m uvicorn app.main:app --reload
 ```
 
+后端默认地址为 `http://127.0.0.1:8000`，接口文档地址为 `http://127.0.0.1:8000/docs`。
+
+### 2. 启动前端
+
+```bash
+cd aigc-tryon-web
+npm install
+npm run dev
+```
+
+前端默认地址为 `http://127.0.0.1:5173`。
+
+### 3. 配置数据库
+
+创建 MySQL 数据库有两种方式：
+
+```bash
+mysql -u root -p < backend/sql/mysql_init.sql
+```
+
+或在 `backend/.env` 中开启自动建表：
+
+```env
+DATABASE_URL=mysql+pymysql://root:password@127.0.0.1:3306/aigc_tryon?charset=utf8mb4
+DATABASE_AUTO_CREATE_TABLES=true
+```
+
 ## 环境变量
 
-后端环境变量见 `backend/.env.example`。
+后端环境变量模板位于 [backend/.env.example](backend/.env.example)。
 
-## 说明
+| 变量 | 说明 |
+| --- | --- |
+| `OPENAI_API_KEY` | OpenAI API Key，用于风格解析和推荐生成 |
+| `OPENAI_MODEL` | 文本推荐模型 |
+| `OPENAI_VISION_MODEL` | 可选视觉模型 |
+| `POSE_MODEL_PATH` | MediaPipe 姿态模型路径 |
+| `DATABASE_URL` | MySQL 完整连接串 |
+| `DATABASE_AUTO_CREATE_TABLES` | 是否启动时自动建表 |
+| `AUTH_SECRET_KEY` | 登录令牌签名密钥 |
+| `TRYON_API_BASE_URL` | 云端虚拟试穿服务地址 |
+| `TRYON_API_KEY` | 云端虚拟试穿服务鉴权密钥 |
 
-- `backend/models/pose_landmarker_lite.task` 需要保留，体型分析依赖这个模型文件。
-- 未配置远程试穿服务时，试穿接口会返回占位结果。
->>>>>>> 259b3a6f4d618dd72d1639bfb2b038531577208a
+## 核心接口
+
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| `GET` | `/api/v1/health` | 健康检查 |
+| `POST` | `/api/v1/auth/register` | 用户注册 |
+| `POST` | `/api/v1/auth/login` | 用户登录 |
+| `GET` | `/api/v1/auth/me` | 获取当前登录用户 |
+| `POST` | `/api/v1/body/analyze` | 体型分析 |
+| `POST` | `/api/v1/style/parse` | 风格语义解析 |
+| `POST` | `/api/v1/recommend` | 结构化穿搭推荐 |
+| `POST` | `/api/v1/chat/recommend` | 聊天式穿搭推荐 |
+| `POST` | `/api/v1/chat/recommend/stream` | 流式聊天推荐 |
+| `GET` | `/api/v1/wardrobe` | 衣橱列表 |
+| `POST` | `/api/v1/wardrobe/upload` | 上传衣物 |
+| `POST` | `/api/v1/tryon` | 虚拟试穿 |
+| `GET` | `/api/v1/users/{user_id}/dashboard` | 用户仪表盘 |
+
+## 文档与图示
+
+- [项目概览](docs/introduction.md)
+- [快速开始](docs/quickstart.md)
+- [系统功能模块图](docs/system_function_module_diagram.svg)
+- [数据库 ER 图](docs/database_er_core_diagram_plain.svg)
+- [图片上传流程图](docs/image_upload_flowchart_plain.svg)
+- [虚拟试穿流程图](docs/virtual_tryon_flowchart_plain.svg)
+
+## 运行测试
+
+```bash
+cd backend
+python -m pytest
+```
+
+```bash
+cd aigc-tryon-web
+npm run build
+```
+
+## 模型与大文件说明
+
+仓库会保留必要的轻量运行文件，例如 `backend/models/pose_landmarker_lite.task`。大型权重、运行日志、上传图片、构建产物和本地环境文件不会提交到 GitHub，相关规则见 [.gitignore](.gitignore)。
+
+`cloud_inference/` 中包含虚拟试穿云端推理适配代码。若部署真实试穿能力，需要按模型来源准备 IDM-VTON、DensePose、Human Parsing、OpenPose 等权重，并配置 `TRYON_API_BASE_URL`。
+
+## 致谢
+
+虚拟试穿能力参考 IDM-VTON 相关工作：
+
+- [IDM-VTON 项目主页](https://idm-vton.github.io)
+- [Improving Diffusion Models for Authentic Virtual Try-on in the Wild](https://arxiv.org/abs/2403.05139)
+- [yisol/IDM-VTON](https://github.com/yisol/IDM-VTON)
+
+本仓库在其基础上扩展了毕业设计所需的前端系统、后端 API、用户数据管理、推荐链路、数据库持久化和工程文档。

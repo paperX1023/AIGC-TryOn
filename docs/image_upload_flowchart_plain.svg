@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1160" viewBox="0 0 1200 1160">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .box { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .round { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .diamond { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .text { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 22px; fill: #000000; }
+      .small { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 18px; fill: #000000; }
+      .line { stroke: #000000; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="1160"/>
+
+  <rect class="round" x="475" y="20" width="250" height="58" rx="29"/>
+  <text class="text" x="600" y="58" text-anchor="middle">开始</text>
+
+  <path class="line" d="M600 78 L600 112"/>
+  <rect class="box" x="420" y="112" width="360" height="62" rx="4"/>
+  <text class="text" x="600" y="151" text-anchor="middle">用户选择本地图片</text>
+
+  <path class="line" d="M600 174 L600 207"/>
+  <rect class="box" x="420" y="207" width="360" height="70" rx="4"/>
+  <text class="text" x="600" y="236" text-anchor="middle">前端读取文件信息</text>
+  <text class="small" x="600" y="264" text-anchor="middle">获取文件名、类型和大小</text>
+
+  <path class="line" d="M600 277 L600 310"/>
+  <rect class="box" x="420" y="310" width="360" height="62" rx="4"/>
+  <text class="text" x="600" y="349" text-anchor="middle">构造表单上传请求</text>
+
+  <path class="line" d="M600 372 L600 405"/>
+  <rect class="box" x="420" y="405" width="360" height="62" rx="4"/>
+  <text class="text" x="600" y="444" text-anchor="middle">后端接收上传文件</text>
+
+  <path class="line" d="M600 467 L600 502"/>
+  <polygon class="diamond" points="600,502 755,587 600,672 445,587"/>
+  <text class="text" x="600" y="581" text-anchor="middle">文件校验</text>
+  <text class="small" x="600" y="609" text-anchor="middle">是否通过？</text>
+
+  <path class="line" d="M755 587 L850 587"/>
+  <text class="small" x="800" y="574" text-anchor="middle">否</text>
+  <rect class="box" x="850" y="552" width="270" height="70" rx="4"/>
+  <text class="text" x="985" y="582" text-anchor="middle">返回错误信息</text>
+  <text class="small" x="985" y="609" text-anchor="middle">格式错误或文件为空</text>
+
+  <path class="line" d="M985 622 L985 675"/>
+  <rect class="box" x="850" y="675" width="270" height="62" rx="4"/>
+  <text class="text" x="985" y="714" text-anchor="middle">前端显示提示</text>
+
+  <path class="line" d="M985 737 L985 790"/>
+  <rect class="round" x="860" y="790" width="250" height="58" rx="29"/>
+  <text class="text" x="985" y="828" text-anchor="middle">结束</text>
+
+  <path class="line" d="M600 672 L600 710"/>
+  <text class="small" x="625" y="696">是</text>
+  <rect class="box" x="420" y="710" width="360" height="62" rx="4"/>
+  <text class="text" x="600" y="749" text-anchor="middle">生成唯一文件名</text>
+
+  <path class="line" d="M600 772 L600 805"/>
+  <rect class="box" x="420" y="805" width="360" height="70" rx="4"/>
+  <text class="text" x="600" y="834" text-anchor="middle">保存至 uploads 目录</text>
+  <text class="small" x="600" y="862" text-anchor="middle">写入服务器文件系统</text>
+
+  <path class="line" d="M600 875 L600 908"/>
+  <rect class="box" x="420" y="908" width="360" height="70" rx="4"/>
+  <text class="text" x="600" y="937" text-anchor="middle">生成图片访问地址</text>
+  <text class="small" x="600" y="965" text-anchor="middle">返回文件路径与 URL</text>
+
+  <path class="line" d="M600 978 L600 1011"/>
+  <rect class="box" x="420" y="1011" width="360" height="62" rx="4"/>
+  <text class="text" x="600" y="1050" text-anchor="middle">前端更新页面状态</text>
+
+  <path class="line" d="M600 1073 L600 1092"/>
+  <rect class="round" x="475" y="1092" width="250" height="58" rx="29"/>
+  <text class="text" x="600" y="1130" text-anchor="middle">结束</text>
+</svg>

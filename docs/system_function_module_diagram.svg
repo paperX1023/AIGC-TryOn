@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 100 1600 900">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .system-box { fill: #1f4e79; stroke: #173b5c; stroke-width: 2; rx: 10; }
+      .system-text { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 30px; font-weight: 700; fill: #ffffff; }
+      .module-box { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; rx: 8; }
+      .module-head { fill: #e8f1f8; stroke: #94a3b8; stroke-width: 2; rx: 8; }
+      .module-title { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #1f2937; }
+      .item { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 19px; fill: #374151; }
+      .line { stroke: #64748b; stroke-width: 2.4; fill: none; }
+      .dot { fill: #64748b; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="100" width="1600" height="900"/>
+
+  <rect class="system-box" x="480" y="140" width="640" height="82"/>
+  <text class="system-text" x="800" y="192" text-anchor="middle">AIGC 智能穿搭与虚拟试衣系统</text>
+
+  <path class="line" d="M800 222 L800 276"/>
+  <path class="line" d="M190 276 L1410 276"/>
+
+  <path class="line" d="M190 276 L190 318"/>
+  <path class="line" d="M530 276 L530 318"/>
+  <path class="line" d="M870 276 L870 318"/>
+  <path class="line" d="M1210 276 L1210 318"/>
+  <path class="line" d="M360 276 L360 648"/>
+  <path class="line" d="M700 276 L700 648"/>
+  <path class="line" d="M1040 276 L1040 648"/>
+
+  <circle class="dot" cx="800" cy="276" r="5"/>
+
+  <g transform="translate(60 318)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">用户管理模块</text>
+    <text class="item" x="30" y="100">1. 用户注册与登录</text>
+    <text class="item" x="30" y="138">2. 个人资料维护</text>
+    <text class="item" x="30" y="176">3. 身高体重信息维护</text>
+    <text class="item" x="30" y="214">4. 穿搭偏好设置</text>
+    <text class="item" x="30" y="252">5. 账号认证管理</text>
+  </g>
+
+  <g transform="translate(400 318)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">身材分析模块</text>
+    <text class="item" x="30" y="100">1. 人物图片上传</text>
+    <text class="item" x="30" y="138">2. 姿态特征提取</text>
+    <text class="item" x="30" y="176">3. 身材类型识别</text>
+    <text class="item" x="30" y="214">4. 肩腰腿比例分析</text>
+    <text class="item" x="30" y="252">5. 分析结果保存</text>
+  </g>
+
+  <g transform="translate(740 318)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">智能推荐模块</text>
+    <text class="item" x="30" y="100">1. 聊天式穿搭咨询</text>
+    <text class="item" x="30" y="138">2. 用户需求解析</text>
+    <text class="item" x="30" y="176">3. 风格偏好匹配</text>
+    <text class="item" x="30" y="214">4. 穿搭方案生成</text>
+    <text class="item" x="30" y="252">5. 推荐结果保存</text>
+  </g>
+
+  <g transform="translate(1080 318)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">虚拟试衣模块</text>
+    <text class="item" x="30" y="100">1. 人物图片选择</text>
+    <text class="item" x="30" y="138">2. 服装图片选择</text>
+    <text class="item" x="30" y="176">3. 试衣任务提交</text>
+    <text class="item" x="30" y="214">4. 试衣结果生成</text>
+    <text class="item" x="30" y="252">5. 结果展示与保存</text>
+  </g>
+
+  <g transform="translate(230 648)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">智能衣橱模块</text>
+    <text class="item" x="30" y="100">1. 衣物图片上传</text>
+    <text class="item" x="30" y="138">2. 衣物信息录入</text>
+    <text class="item" x="30" y="176">3. 衣物类别管理</text>
+    <text class="item" x="30" y="214">4. 识别结果保存</text>
+    <text class="item" x="30" y="252">5. 个人衣橱管理</text>
+  </g>
+
+  <g transform="translate(570 648)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">历史记录模块</text>
+    <text class="item" x="30" y="100">1. 身材分析历史</text>
+    <text class="item" x="30" y="138">2. 聊天会话历史</text>
+    <text class="item" x="30" y="176">3. 穿搭推荐历史</text>
+    <text class="item" x="30" y="214">4. 虚拟试衣历史</text>
+    <text class="item" x="30" y="252">5. 历史结果查询</text>
+  </g>
+
+  <g transform="translate(910 648)">
+    <rect class="module-box" x="0" y="0" width="260" height="280"/>
+    <rect class="module-head" x="0" y="0" width="260" height="62"/>
+    <text class="module-title" x="130" y="40" text-anchor="middle">系统支撑模块</text>
+    <text class="item" x="30" y="100">1. 文件上传与存储</text>
+    <text class="item" x="30" y="138">2. 数据库管理</text>
+    <text class="item" x="30" y="176">3. 后端接口服务</text>
+    <text class="item" x="30" y="214">4. AI 模型服务调用</text>
+    <text class="item" x="30" y="252">5. 系统健康检查</text>
+  </g>
+
+</svg>

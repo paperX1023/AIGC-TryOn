@@ -3,7 +3,7 @@ import { App, Button, Card, Col, Input, Row, Space, Tag } from 'antd'
 import PageContainer from '../../shared/components/PageContainer'
 import { useAppStore } from '../../shared/store/useAppStore'
 import { streamChatMessage } from '../../features/chat/api'
-import type { ChatMessage, ParsedStyleResult, RecommendResult } from '../../features/chat/types'
+import type { ChatMessage } from '../../features/chat/types'
 import { getApiErrorMessage } from '../../shared/api/errors'
 
 export default function ChatPage() {
@@ -11,45 +11,19 @@ export default function ChatPage() {
     const currentUser = useAppStore((state) => state.currentUser)
     const bodyAnalysis = useAppStore((state) => state.bodyAnalysis)
     const currentChatSessionId = useAppStore((state) => state.currentChatSessionId)
+    const messages = useAppStore((state) => state.chatMessages)
+    const parsedResult = useAppStore((state) => state.chatParsedResult)
+    const recommendResult = useAppStore((state) => state.chatRecommendResult)
     const setCurrentChatSessionId = useAppStore((state) => state.setCurrentChatSessionId)
+    const appendChatMessages = useAppStore((state) => state.appendChatMessages)
+    const updateChatMessage = useAppStore((state) => state.updateChatMessage)
+    const setChatMeta = useAppStore((state) => state.setChatMeta)
 
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
-    const [sessionId, setSessionId] = useState<string>(currentChatSessionId)
-    const [parsedResult, setParsedResult] = useState<ParsedStyleResult | null>(null)
-    const [recommendResult, setRecommendResult] = useState<RecommendResult | null>(null)
     const [streamingMessageId, setStreamingMessageId] = useState<string>('')
     const messagesEndRef = useRef<HTMLDivElement | null>(null)
     const streamControllerRef = useRef<AbortController | null>(null)
-    const [messages, setMessages] = useState<ChatMessage[]>([
-        {
-            id: 'init',
-            role: 'assistant',
-            content: '你好，我可以根据你的体型分析结果，为你推荐更适合的穿搭方向。',
-        },
-    ])
-
-    useEffect(() => {
-        setSessionId(currentChatSessionId)
-    }, [currentChatSessionId])
-
-    useEffect(() => {
-        streamControllerRef.current?.abort()
-        streamControllerRef.current = null
-        setLoading(false)
-        setStreamingMessageId('')
-        setSessionId('')
-        setCurrentChatSessionId('')
-        setParsedResult(null)
-        setRecommendResult(null)
-        setMessages([
-            {
-                id: 'init',
-                role: 'assistant',
-                content: '你好，我可以根据你的体型分析结果，为你推荐更适合的穿搭方向。',
-            },
-        ])
-    }, [currentUser?.id, setCurrentChatSessionId])
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
@@ -65,16 +39,7 @@ export default function ChatPage() {
         messageId: string,
         updater: string | ((content: string) => string),
     ) => {
-        setMessages((prev) => prev.map((item) => {
-            if (item.id !== messageId) {
-                return item
-            }
-
-            return {
-                ...item,
-                content: typeof updater === 'function' ? updater(item.content) : updater,
-            }
-        }))
+        updateChatMessage(messageId, updater)
     }
 
     const handleSend = async () => {
@@ -101,7 +66,7 @@ export default function ChatPage() {
             content: '',
         }
 
-        setMessages((prev) => [...prev, userMessage, assistantMessage])
+        appendChatMessages([userMessage, assistantMessage])
         setInput('')
         setStreamingMessageId(assistantMessageId)
 
@@ -114,7 +79,7 @@ export default function ChatPage() {
             await streamChatMessage({
                 text: text,
                 user_id: currentUser?.id,
-                session_id: sessionId || undefined,
+                session_id: currentChatSessionId || undefined,
                 body_context: bodyAnalysis
                     ? {
                         gender: bodyAnalysis.gender,
@@ -128,23 +93,18 @@ export default function ChatPage() {
             }, {
                 signal: controller.signal,
                 onSession: (nextSessionId) => {
-                    setSessionId(nextSessionId)
                     setCurrentChatSessionId(nextSessionId)
                 },
                 onMeta: (data) => {
-                    setSessionId(data.session_id)
                     setCurrentChatSessionId(data.session_id)
-                    setParsedResult(data.parsed_result)
-                    setRecommendResult(data.recommend_result ?? null)
+                    setChatMeta(data.parsed_result, data.recommend_result ?? null)
                 },
                 onChunk: (data) => {
                     updateAssistantMessage(assistantMessageId, (content) => `${content}${data.content}`)
                 },
                 onDone: (data) => {
-                    setSessionId(data.session_id)
                     setCurrentChatSessionId(data.session_id)
-                    setParsedResult(data.parsed_result)
-                    setRecommendResult(data.recommend_result ?? null)
+                    setChatMeta(data.parsed_result, data.recommend_result ?? null)
                     updateAssistantMessage(assistantMessageId, data.reply)
                 },
             })
@@ -278,7 +238,7 @@ export default function ChatPage() {
                         </Card>
 
                         <Card title="会话信息" style={{ borderRadius: 16 }}>
-                            {sessionId || '当前为新会话，发送消息后将记录 session_id。'}
+                            {currentChatSessionId || '当前为新会话，发送消息后将记录 session_id。'}
                         </Card>
                     </Space>
                 </Col>

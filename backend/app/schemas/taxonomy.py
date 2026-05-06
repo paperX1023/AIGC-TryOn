@@ -6,6 +6,9 @@ class StrValueEnum(str, Enum):
     def values(cls) -> list[str]:
         return [item.value for item in cls]
 
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 class Gender(StrValueEnum):
     MALE = "男"

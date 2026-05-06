@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="980" viewBox="0 0 1800 980">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .entity { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .head { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .entity-title { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #000000; }
+      .field { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 18px; fill: #000000; }
+      .line { stroke: #000000; stroke-width: 2; fill: none; }
+      .line-dash { stroke: #000000; stroke-width: 2; fill: none; stroke-dasharray: 7 7; }
+      .relation { font-family: "Microsoft YaHei", "SimSun", Arial, sans-serif; font-size: 17px; fill: #000000; }
+      .divider { stroke: #000000; stroke-width: 1.4; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1800" height="980"/>
+
+  <!-- relationship lines -->
+  <path class="line" d="M900 225 L900 280"/>
+  <text class="relation" x="912" y="246">1</text>
+  <text class="relation" x="912" y="276">N</text>
+
+  <path class="line" d="M695 150 L450 315"/>
+  <text class="relation" x="672" y="163">1</text>
+  <text class="relation" x="462" y="305">N</text>
+
+  <path class="line" d="M1105 150 L1350 315"/>
+  <text class="relation" x="1120" y="163">1</text>
+  <text class="relation" x="1328" y="305">N</text>
+
+  <path class="line" d="M735 225 L450 665"/>
+  <text class="relation" x="716" y="250">1</text>
+  <text class="relation" x="462" y="656">N</text>
+
+  <path class="line" d="M900 225 L900 665"/>
+  <text class="relation" x="878" y="250">1</text>
+  <text class="relation" x="878" y="656">N</text>
+
+  <path class="line" d="M450 500 L450 665"/>
+  <text class="relation" x="462" y="524">1</text>
+  <text class="relation" x="462" y="656">N</text>
+
+  <path class="line-dash" d="M690 400 L620 400 L620 545 L900 545 L900 500"/>
+  <text class="relation" x="638" y="390">最近身材分析</text>
+
+  <path class="line" d="M900 500 L900 665"/>
+  <text class="relation" x="912" y="524">1</text>
+  <text class="relation" x="912" y="656">N</text>
+
+  <path class="line" d="M1110 400 L1320 400 L1320 665"/>
+  <text class="relation" x="1124" y="390">1</text>
+  <text class="relation" x="1332" y="656">N</text>
+
+  <path class="line" d="M690 445 L520 445 L520 715"/>
+  <text class="relation" x="650" y="435">1</text>
+  <text class="relation" x="532" y="706">N</text>
+
+  <!-- users -->
+  <g transform="translate(690 35)">
+    <rect class="entity" x="0" y="0" width="420" height="190" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">用户表 users</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：用户编号</text>
+    <text class="field" x="28" y="122">UK  username：用户名</text>
+    <text class="field" x="28" y="156">gender / height_cm / weight_kg：基础体征</text>
+  </g>
+
+  <!-- body analysis -->
+  <g transform="translate(240 315)">
+    <rect class="entity" x="0" y="0" width="420" height="185" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">身材分析记录表</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：分析记录编号</text>
+    <text class="field" x="28" y="122">FK  user_id：用户编号</text>
+    <text class="field" x="28" y="156">body_shape / shoulder_type / waist_type</text>
+  </g>
+
+  <!-- chat sessions -->
+  <g transform="translate(690 315)">
+    <rect class="entity" x="0" y="0" width="420" height="185" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">聊天会话表 chat_sessions</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：会话编号</text>
+    <text class="field" x="28" y="122">FK  user_id：用户编号</text>
+    <text class="field" x="28" y="156">FK  latest_body_analysis_id：最近分析记录</text>
+  </g>
+
+  <!-- wardrobe -->
+  <g transform="translate(1140 315)">
+    <rect class="entity" x="0" y="0" width="420" height="185" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">衣橱单品表 wardrobe_items</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：衣物编号</text>
+    <text class="field" x="28" y="122">FK  user_id：用户编号</text>
+    <text class="field" x="28" y="156">name / category / image_url：衣物信息</text>
+  </g>
+
+  <!-- tryon -->
+  <g transform="translate(240 665)">
+    <rect class="entity" x="0" y="0" width="420" height="225" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">试衣记录表 tryon_records</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：试衣记录编号</text>
+    <text class="field" x="28" y="122">FK  user_id：用户编号</text>
+    <text class="field" x="28" y="156">FK  chat_session_id：聊天会话编号</text>
+    <text class="field" x="28" y="190">FK  body_analysis_record_id：身材分析编号</text>
+  </g>
+
+  <!-- recommendation -->
+  <g transform="translate(690 665)">
+    <rect class="entity" x="0" y="0" width="420" height="205" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">推荐记录表</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：推荐记录编号</text>
+    <text class="field" x="28" y="122">FK  user_id：用户编号</text>
+    <text class="field" x="28" y="156">FK  chat_session_id：聊天会话编号</text>
+    <text class="field" x="28" y="190">recommend_result：推荐结果</text>
+  </g>
+
+  <!-- chat messages -->
+  <g transform="translate(1140 665)">
+    <rect class="entity" x="0" y="0" width="420" height="205" rx="6"/>
+    <rect class="head" x="0" y="0" width="420" height="54" rx="6"/>
+    <text class="entity-title" x="210" y="35" text-anchor="middle">聊天消息表 chat_messages</text>
+    <line class="divider" x1="0" y1="54" x2="420" y2="54"/>
+    <text class="field" x="28" y="88">PK  id：消息编号</text>
+    <text class="field" x="28" y="122">FK  chat_session_id：聊天会话编号</text>
+    <text class="field" x="28" y="156">role / content：消息角色与内容</text>
+    <text class="field" x="28" y="190">parsed_result / recommend_result：结构化结果</text>
+  </g>
+</svg>

@@ -3,22 +3,21 @@ import { App, Button, Card, Col, Descriptions, Row, Space, Tag, Upload } from 'a
 import { UploadOutlined } from '@ant-design/icons'
 import PageContainer from '../../shared/components/PageContainer'
 import { analyzeBody } from '../../features/analyze/api'
-import type { BodyAnalysisResult } from '../../features/analyze/types'
 import { getApiErrorMessage } from '../../shared/api/errors'
+import { resolveApiAssetUrl } from '../../shared/api/assets'
 import { useAppStore } from '../../shared/store/useAppStore'
 
 export default function AnalyzePage() {
     const { message } = App.useApp()
     const currentUser = useAppStore((state) => state.currentUser)
+    const result = useAppStore((state) => state.bodyAnalysis)
     const [file, setFile] = useState<File | null>(null)
     const [previewUrl, setPreviewUrl] = useState('')
     const [loading, setLoading] = useState(false)
-    const [result, setResult] = useState<BodyAnalysisResult | null>(null)
     const setBodyAnalysis = useAppStore((state) => state.setBodyAnalysis)
 
     const handleSelectFile = (selectedFile: File) => {
         setFile(selectedFile)
-        setResult(null)
 
         const localUrl = URL.createObjectURL(selectedFile)
         setPreviewUrl(localUrl)
@@ -35,7 +34,6 @@ export default function AnalyzePage() {
         try {
             setLoading(true)
             const data = await analyzeBody(file, currentUser?.id)
-            setResult(data)
             setBodyAnalysis(data)
             message.success(currentUser ? '体型分析完成，已保存到你的记录' : '体型分析完成')
         } catch (error) {
@@ -66,9 +64,9 @@ export default function AnalyzePage() {
                                     background: '#fafafa',
                                 }}
                             >
-                                {previewUrl ? (
+                                {previewUrl || result?.image_url ? (
                                     <img
-                                        src={previewUrl}
+                                        src={previewUrl || resolveApiAssetUrl(result?.image_url || '')}
                                         alt="用户照片预览"
                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                     />
